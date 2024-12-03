@@ -11,25 +11,30 @@ type D1 struct {
 	Challenge lib.Challenge
 }
 
-func InitDayOne(isTest bool) lib.Output {
+func InitDayOne(arguments lib.Arguments) lib.Output {
 	return &D1{
 		Challenge: lib.Challenge{
-			Configuration: lib.Config(1, isTest),
+			Arguments: arguments,
 		},
 	}
 }
 
 func (d *D1) Show() {
-	isTest := d.Challenge.Configuration.IsTest
+	isTest := d.Challenge.Arguments.IsTest
 	var isTestString string
 	if isTest {
 		isTestString = "[Test]"
 	}
-	fmt.Printf("%s A: %d, B: %d\n", isTestString, d.A(isTest), d.B(isTest))
+	a := d.A()
+	b := d.B()
+	fmt.Printf("%s A: %d, B: %d\n", isTestString, a, b)
+	if (a != 1590491 || b != 22588371) && !isTest {
+		panic("a != 1590491 || b != 22588371")
+	}
 }
 
-func (d *D1) A(isTest bool) int {
-	lines := d.Challenge.GetLines(1, isTest)
+func (d *D1) A() int {
+	lines := d.Challenge.GetLines()
 
 	firstColumn, secondColumn := toIntColumns(lines)
 	if len(firstColumn) != len(secondColumn) {
@@ -54,8 +59,8 @@ func (d *D1) A(isTest bool) int {
 	return res
 
 }
-func (d *D1) B(isTest bool) int {
-	lines := d.Challenge.GetLines(1, isTest)
+func (d *D1) B() int {
+	lines := d.Challenge.GetLines()
 
 	leftColumn, rightColumn := toIntColumns(lines)
 	rightCountMap := map[int]int{}

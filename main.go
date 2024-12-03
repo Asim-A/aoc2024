@@ -5,24 +5,29 @@ import (
 	"github.com/asim-a/aoc2024/lib"
 )
 
-type Context struct {
-	Solutions map[int]lib.Output
-}
-
-func (c *Context) Run(elements ...int) {
-	for _, element := range elements {
-		c.Solutions[element].Show()
-	}
-}
-
-func (c *Context) AddRun(number int, outputer lib.Output) {
-	c.Solutions[number] = outputer
+var dayMap = map[int]func(lib.Arguments) lib.Output{
+	1: days.InitDayOne,
+	2: days.InitDayTwo,
+	3: days.InitDayThree,
 }
 
 func main() {
-	ctx := Context{
-		Solutions: map[int]lib.Output{},
+	arguments := lib.GetArguments()
+	fp, ok := dayMap[arguments.Day]
+	if !ok {
+		panic("I have not got that far yet")
 	}
-	ctx.AddRun(1, days.InitDayOne(false))
-	ctx.Run(1)
+	ctx := Context{
+		Solution: fp(arguments),
+	}
+
+	if arguments.Day <= 0 || arguments.Day > 25 {
+		panic("invalid day, only valid days are between 1 and 25")
+	}
+
+	ctx.Solution.Show()
+}
+
+type Context struct {
+	Solution lib.Output
 }

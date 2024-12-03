@@ -16,7 +16,9 @@ func Check(e error) {
 func ReadFileAsBytes(filename string) []byte {
 
 	data, err := os.ReadFile(filename)
-	Check(err)
+	if err != nil {
+		return []byte{}
+	}
 
 	return data
 }
@@ -27,12 +29,12 @@ func ReadFileAsString(filename string) string {
 
 func ReadLines(filename string, opts opts.ReadOptions) []string {
 
-	string_content := ReadFileAsString(filename)
+	input := ReadFileAsString(filename)
 
 	result := []string{}
 	s := ""
 
-	for _, ch := range string_content {
+	for _, ch := range input {
 		if ch == '\n' {
 			result = append(result, s)
 			if opts.IncludeNewLine {
@@ -47,25 +49,29 @@ func ReadLines(filename string, opts opts.ReadOptions) []string {
 	return result
 }
 
-func Config(day int, isTest bool) DayConfig {
-	filenameLines := fmt.Sprintf("data/%d", day)
-	filenameTestLines := fmt.Sprintf("%stest", filenameLines)
-	lines := ReadLines(filenameLines, opts.ReadOptions{})
-	testLines := ReadLines(filenameTestLines, opts.ReadOptions{})
+func RemoveIndexInt(s []int, i int) []int {
+	return append(s[:i], s[i+1:]...)
+}
+func RemoveIndexString(s []string, i int) []string {
+	return append(s[:i], s[i+1:]...)
+}
 
-	return DayConfig{
-		Day:       day,
-		IsTest:    isTest,
-		Lines:     lines,
-		TestLines: testLines,
+func (c *Challenge) GetFilename() string {
+	day := c.Arguments.Day
+	if c.Arguments.IsTest {
+		return fmt.Sprintf("data/%dtest", day)
+	} else {
+		return fmt.Sprintf("data/%d", day)
 	}
 }
 
-func (c *Challenge) GetLines(day int, isTest bool) []string {
+func (c *Challenge) GetInput() string {
+	filename := c.GetFilename()
+	return ReadFileAsString(filename)
+}
 
-	if c.Configuration.IsTest {
-		return c.Configuration.TestLines
-	} else {
-		return c.Configuration.Lines
-	}
+func (c *Challenge) GetLines() []string {
+	filename := c.GetFilename()
+
+	return ReadLines(filename, opts.ReadOptions{})
 }
