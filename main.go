@@ -9,6 +9,7 @@ var dayMap = map[int]func(lib.Arguments) lib.Output{
 	1: days.InitDayOne,
 	2: days.InitDayTwo,
 	3: days.InitDayThree,
+	4: days.InitDayFour,
 }
 
 func main() {
